@@ -153,13 +153,13 @@ export default function Home() {
   
   return (
     <main className="flex min-h-screen">
-      <div className="w-8/12 mx-auto">
+      <div className="w-full sm:w-full md:w-8/12 mx-auto">
         <h1 className="text-center text-2xl font-bold py-5">DO YOU WANT TO SCALE YOUR BUSINESS?</h1>
         <h3 className="text-center">{"We're looking to invest in one great business per month. Will it be yours?"}</h3>
           <div className="bg-white shadow-xl mt-4 rounded-xl">
             <h1 className="text-center text-2xl py-5">{data[active].title}</h1>
             {
-              radio && (<div className={`grid ${gridCols} gap-2 px-16 pb-7`}>
+              radio && (<div className={`grid ${gridCols} gap-2 px-2 sm:px-2 md:px-10 lg:px-16 pb-7`}>
               { data[active].options.map((item, index)=>{
                   if (data[active].type === "rimg") {
                     return(
@@ -196,7 +196,7 @@ export default function Home() {
             }
             {
               free && (
-                <div className="grid grid-cols-2 gap-y-4 gap-x-10 px-16 pb-7">
+                <div className="grid grid-cols-2 gap-y-4 gap-x-2 sm:gap-x-2 md:gap-x-6 lg:gap-x-10 px-2 sm:px-2 md:px-10 lg:px-16 pb-7">
                   {
                     data[active].type === "bool" && data[active].options.map((item, index)=>{
                       return(<BoolCard
