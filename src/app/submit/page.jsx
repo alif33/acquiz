@@ -7,7 +7,7 @@ const Submit = () =>{
     const router = useRouter();
     return(
         <div className="min-h-screen bg-slate-100">
-            <div className=" pt-44">
+            <div className="pt-28">
                 <h1 className="text-5xl text-center">Thank you</h1>
             </div>
             <div className="w-[120px] mx-auto mt-5">
