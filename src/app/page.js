@@ -14,10 +14,13 @@ import toast from 'react-hot-toast';
 export default function Home() {
   const [answers, setAnswers] = useState([]);
   const [active, setActive] = useState(0);
+  const [isError, setError] = useState(false);
   const [userMail, setUserMail] = useState("");
   const [gridCols, setGridCols] = useState("grid-cols-2");
 
   const router = useRouter();
+  const rgx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   const data = [
     { type: "rimg", title: "Which best describes you?*", options:[
       {value: "I own a business", img: "/img/options/home.png"}, 
@@ -98,7 +101,7 @@ export default function Home() {
 
   const handleNext = () => {
     if (active < data.length-1) {
-      if (data[active].type === "input") {
+      if (data[active].type === "input" || data[active].type === "textarea") {
         const __current = answers[active];
     
         for (const option of data[active].options) {
@@ -106,17 +109,26 @@ export default function Home() {
           
           if (!__current || !__current[field]) {
             console.log(`Field "${field}" is empty.`);
+            setError(true);
             return;
-          }else{
-            setActive(active + 1)
           }
         }
-      }else{
-        setActive(active + 1)
+      }else if(data[active].type === "rimg" || data[active].type === "rtext" || data[active].type === "bool"){
+        const currentAnswer = answers[active];
+        if (!currentAnswer || !currentAnswer.answer) {
+          setError(true);
+          return; 
+        }
       }
+      setError(false);
+      setActive(active + 1);
     }else{
       if(data[active].type === "submit"){
-        handleSubmit();
+        if( userMail && rgx.test(userMail)){
+          handleSubmit();
+        }else{
+          setError(true);
+        }
       }
     }
   }
@@ -131,6 +143,7 @@ export default function Home() {
   const free = data[active].type==="input" || data[active].type==="textarea" || data[active].type==="bool" || data[active].type==="submit"? true: false
 
   useEffect(() => {
+
     if (data[active].type==="rimg") {
       switch (data[active].options.length) {
         case 2:
@@ -144,9 +157,11 @@ export default function Home() {
           break;
       }
     }
+
     if(data[active].type==="rtext" || data[active].type==="bool"){
       setGridCols("grid-cols-2");
     }
+    setError(false);
   }, [active]);
 
   console.log(answers)
@@ -157,7 +172,7 @@ export default function Home() {
         <h1 className="text-center text-2xl font-bold py-5">DO YOU WANT TO SCALE YOUR BUSINESS?</h1>
         <h3 className="text-center">{"We're looking to invest in one great business per month. Will it be yours?"}</h3>
           <div className="bg-white shadow-xl mt-4 rounded-xl">
-            <h1 className="text-center text-2xl py-5">{data[active].title}</h1>
+            <h1 className={`${isError? "text-red-600": "text-black"} text-center text-2xl py-5`}>{data[active].title}</h1>
             {
               radio && (<div className={`grid ${gridCols} gap-2 px-2 sm:px-2 md:px-10 lg:px-16 pb-7`}>
               { data[active].options.map((item, index)=>{
