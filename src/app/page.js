@@ -82,10 +82,12 @@ export default function Home() {
 
 
   const start = [
+    //1
     { type: "first", title: "Which best describes you?*", options:[
       {value: "I own a business", img: "/img/options/home.png"}, 
       {value: "I want to start a business", img: "/img/options/rocket.png"}
     ]},
+    //2
     { type: "rimg", title: "What problem can I help you solve?*", options:[
       {value: "Getting Leads", img: "/img/options/uloop.png"}, 
       {value: "Making Sales", img: "/img/options/handshake.png"}, 
@@ -93,36 +95,11 @@ export default function Home() {
       {value: "What To Sell", img: "/img/options/sell.png"}, 
       {value: "Other", img: "/img/options/others.png"}, 
     ]},
-    { type: "rtext", title: "What type of business do you have?", options:[
-      {value: "Service"}, 
-      {value: "Ecommerce"},
-      {value: "E-learning"},
-      {value: "Brick & Motor"},
-      {value: "Software"},
-      {value: "Other"}
-    ]},
-    { type: "bool", title: "Are you a full or part owner of the company and can you decide how to allocate equity?*", options:[
-      {value: "Yes"}, 
-      {value: "No"}
-    ]},
-    { type: "input", title: "Which best describes you?*", options:[
-      {field: "name", full: false}, 
-      {field: "phone", full: false},
-      {field: "address", full: true},
-      {field: "zipCode", full: true},
-
-    ]},
-    { type: "rtext", title: "What type of business do you have?", options:[
-      {value: "Service"}, 
-      {value: "Ecommerce"},
-      {value: "E-learning"},
-      {value: "Brick & Motor"},
-      {value: "Software"},
-      {value: "Other"}
-    ]},
+    //3
     { type: "textarea", title: "Write a description", options:[
       {field: "description", full: true}, 
     ]},
+    //4
     { type: "submit", title: "Drop your Email*", options:[
       {field: "email", full: true}, 
     ]},
