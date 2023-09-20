@@ -12,6 +12,12 @@ import Http from '@/lib/Http';
 import toast from 'react-hot-toast';
 
 export default function Home() {
+  const [data, setData] = useState([
+    { type: "first", title: "Which best describes you?*", options:[
+      {value: "I own a business", img: "/img/options/home.png"}, 
+      {value: "I want to start a business", img: "/img/options/rocket.png"}
+    ]},
+  ]);
   const [answers, setAnswers] = useState([]);
   const [active, setActive] = useState(0);
   const [isError, setError] = useState(false);
@@ -21,8 +27,15 @@ export default function Home() {
   const router = useRouter();
   const rgx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  const data = [
-    { type: "rimg", title: "Which best describes you?*", options:[
+//rimg- radio button with image
+//rtext- radio button with text only
+//boolean- true or false
+//input- for all inputs. such as text, number
+//textarea- for text area
+//submit- for submission
+
+  const own = [
+    { type: "first", title: "Which best describes you?*", options:[
       {value: "I own a business", img: "/img/options/home.png"}, 
       {value: "I want to start a business", img: "/img/options/rocket.png"}
     ]},
@@ -44,9 +57,11 @@ export default function Home() {
       {value: "No"}
     ]},
     { type: "input", title: "Which best describes you?*", options:[
-      {field: "email", full: false}, 
+      {field: "name", full: false}, 
       {field: "phone", full: false},
-      {field: "address", full: true}
+      {field: "address", full: true},
+      {field: "zipCode", full: true},
+
     ]},
     { type: "rtext", title: "What type of business do you have?", options:[
       {value: "Service"}, 
@@ -66,11 +81,73 @@ export default function Home() {
   ]
 
 
+  const start = [
+    { type: "first", title: "Which best describes you?*", options:[
+      {value: "I own a business", img: "/img/options/home.png"}, 
+      {value: "I want to start a business", img: "/img/options/rocket.png"}
+    ]},
+    { type: "rimg", title: "What problem can I help you solve?*", options:[
+      {value: "Getting Leads", img: "/img/options/uloop.png"}, 
+      {value: "Making Sales", img: "/img/options/handshake.png"}, 
+      {value: "Recruiting & Hiring", img: "/img/options/men.png"}, 
+      {value: "What To Sell", img: "/img/options/sell.png"}, 
+      {value: "Other", img: "/img/options/others.png"}, 
+    ]},
+    { type: "rtext", title: "What type of business do you have?", options:[
+      {value: "Service"}, 
+      {value: "Ecommerce"},
+      {value: "E-learning"},
+      {value: "Brick & Motor"},
+      {value: "Software"},
+      {value: "Other"}
+    ]},
+    { type: "bool", title: "Are you a full or part owner of the company and can you decide how to allocate equity?*", options:[
+      {value: "Yes"}, 
+      {value: "No"}
+    ]},
+    { type: "input", title: "Which best describes you?*", options:[
+      {field: "name", full: false}, 
+      {field: "phone", full: false},
+      {field: "address", full: true},
+      {field: "zipCode", full: true},
+
+    ]},
+    { type: "rtext", title: "What type of business do you have?", options:[
+      {value: "Service"}, 
+      {value: "Ecommerce"},
+      {value: "E-learning"},
+      {value: "Brick & Motor"},
+      {value: "Software"},
+      {value: "Other"}
+    ]},
+    { type: "textarea", title: "Write a description", options:[
+      {field: "description", full: true}, 
+    ]},
+    { type: "submit", title: "Drop your Email*", options:[
+      {field: "email", full: true}, 
+    ]},
+    
+  ]
+
+
+
+
+
   const handleChange = ({context, answer}) =>{
+    console.log(answer==="I own a business")
     if(answers[active]?.answer !== answer){
       const __ = [...answers];
       __[active] = {context, answer};
       setAnswers(__);
+      if(data[active].type === "first"){
+        if(answer==="I own a business"){
+          setData(own);
+          setActive(active + 1);
+        }else{
+          setData(start);
+          setActive(active + 1);
+        }
+      }
       if (active < data.length-1) {
         setActive(active + 1)
       }
@@ -100,6 +177,7 @@ export default function Home() {
   }
 
   const handleNext = () => {
+    
     if (active < data.length-1) {
       if (data[active].type === "input" || data[active].type === "textarea") {
         const __current = answers[active];
@@ -113,7 +191,7 @@ export default function Home() {
             return;
           }
         }
-      }else if(data[active].type === "rimg" || data[active].type === "rtext" || data[active].type === "bool"){
+      }else if(data[active].type === "rimg" || data[active].type === "rtext" || data[active].type === "bool" || data[active].type === "first"){
         const currentAnswer = answers[active];
         if (!currentAnswer || !currentAnswer.answer) {
           setError(true);
@@ -123,6 +201,10 @@ export default function Home() {
       setError(false);
       setActive(active + 1);
     }else{
+      if (data.length===1) {
+       setError(true)
+      }
+
       if(data[active].type === "submit"){
         if( userMail && rgx.test(userMail)){
           handleSubmit();
@@ -139,7 +221,7 @@ export default function Home() {
     }
   }
   
-  const radio = data[active].type==="rimg" || data[active].type==="rtext"? true: false
+  const radio = data[active].type==="rimg" || data[active].type==="rtext" || data[active].type==="first"? true: false
   const free = data[active].type==="input" || data[active].type==="textarea" || data[active].type==="bool" || data[active].type==="submit"? true: false
 
   useEffect(() => {
@@ -158,13 +240,13 @@ export default function Home() {
       }
     }
 
-    if(data[active].type==="rtext" || data[active].type==="bool"){
+    if(data[active].type==="rtext" || data[active].type==="bool" || data[active].type==="first"){
       setGridCols("grid-cols-2");
     }
     setError(false);
   }, [active]);
 
-  console.log(answers)
+  console.log(answers, data)
   
   return (
     <main className="flex min-h-screen">
@@ -176,7 +258,7 @@ export default function Home() {
             {
               radio && (<div className={`grid ${gridCols} gap-2 px-2 sm:px-2 md:px-10 lg:px-16 pb-7`}>
               { data[active].options.map((item, index)=>{
-                  if (data[active].type === "rimg") {
+                  if (data[active].type === "rimg" || data[active].type === "first") {
                     return(
                     <RadioImage 
                       key={index} 
