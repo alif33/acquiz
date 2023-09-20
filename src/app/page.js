@@ -4,6 +4,7 @@ import RadioImage from '@/components/cards/RadioImage';
 import RadioText from '@/components/cards/RadioText';
 import BoolCard from '@/components/cards/Bool';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import Input from '@/components/cards/Input';
 import TextArea from '@/components/cards/TextArea';
 import Submit from '@/components/cards/Submit';
@@ -12,6 +13,7 @@ import Http from '@/lib/Http';
 import toast from 'react-hot-toast';
 
 export default function Home() {
+  const [shakeCount, setShakeCount] = useState(5); 
   const [data, setData] = useState([
     { type: "first", title: "Which best describes you?*", options:[
       {value: "I own a business", img: "/img/options/home.png"}, 
@@ -106,10 +108,33 @@ export default function Home() {
     
   ]
 
-
-
-
-
+  
+    const shakeGenerator = () => {
+      const shakeElements = document.querySelectorAll('.shake');
+      const l = 7; // Decreased the value for a quicker animation
+  
+      const shake = (element, count) => {
+        if (count <= 0) {
+          return;
+        }
+  
+        element.style.marginLeft = `${l}px`;
+        element.style.marginRight = `-${l}px`;
+  
+        setTimeout(() => {
+          element.style.marginLeft = '0px';
+          element.style.marginRight = '0px';
+  
+          // Recursive call to continue shaking
+          shake(element, count - 1);
+        }, 20); // Decreased the timeout for a quicker animation
+      };
+  
+      shakeElements.forEach((element) => {
+        shake(element, shakeCount);
+      });
+    };
+ 
   const handleChange = ({context, answer}) =>{
     console.log(answer==="I own a business")
     if(answers[active]?.answer !== answer){
@@ -150,6 +175,9 @@ export default function Home() {
         toast.success(`${res.message}`);
         router.push("/submit");
       }
+      if (res.invalid) {
+        toast.error(`${res.message}`);
+      }
     })
   }
 
@@ -165,6 +193,7 @@ export default function Home() {
           if (!__current || !__current[field]) {
             console.log(`Field "${field}" is empty.`);
             setError(true);
+            shakeGenerator();
             return;
           }
         }
@@ -172,6 +201,7 @@ export default function Home() {
         const currentAnswer = answers[active];
         if (!currentAnswer || !currentAnswer.answer) {
           setError(true);
+          shakeGenerator();
           return; 
         }
       }
@@ -179,7 +209,8 @@ export default function Home() {
       setActive(active + 1);
     }else{
       if (data.length===1) {
-       setError(true)
+        setError(true)
+        shakeGenerator();
       }
 
       if(data[active].type === "submit"){
@@ -187,6 +218,7 @@ export default function Home() {
           handleSubmit();
         }else{
           setError(true);
+          shakeGenerator();
         }
       }
     }
@@ -230,7 +262,7 @@ export default function Home() {
       <div className="w-full sm:w-full md:w-8/12 mx-auto">
         <h1 className="text-center text-2xl font-bold py-5">DO YOU WANT TO SCALE YOUR BUSINESS?</h1>
         <h3 className="text-center">{"We're looking to invest in one great business per month. Will it be yours?"}</h3>
-          <div className="bg-white shadow-xl mt-4 rounded-xl">
+          <div className="shake bg-white shadow-xl mt-4 rounded-xl">
             <h1 className={`${isError? "text-red-600": "text-black"} text-center text-2xl py-5`}>{data[active].title}</h1>
             {
               radio && (<div className={`grid ${gridCols} gap-2 px-2 sm:px-2 md:px-10 lg:px-16 pb-7`}>
@@ -331,16 +363,20 @@ export default function Home() {
                 </div>
               )
               }
-            <div className={`flex ${active>0 ?"justify-between": "justify-end"} bg-[#6f00ff] text-white min-w-full px-10 py-4`}>
-              {
-                active > 0 && <div onClick={handlePrev} className="flex cursor-pointer gap-1">
-                <span className="my-auto"><BsArrowLeft size={20}/></span>
-                <span>PREVIOUS</span>
+            <div className="flex justify-between bg-[#6f00ff] text-white min-w-full px-10 py-4">
+              <div className="cursor-pointer">
+                <div onClick={handlePrev} className={`${active>0? "flex  gap-1": "hidden"}`}>
+                  <span className="my-auto"><BsArrowLeft size={20}/></span>
+                  <span className="my-auto">PREVIOUS</span>
+                </div>
               </div>
-              }
+              
+              <div className="flex">
+                {isError && <span className="text-white bg-[#211f1f] py-1 px-3 rounded">This field is required.</span>}
+              </div>
               
               <div onClick={handleNext} className="flex cursor-pointer gap-1">
-                <span>NEXT</span>
+                <span className="my-auto">NEXT</span>
                 <span className="my-auto"><BsArrowRight size={20}/></span>
               </div>
             </div>
